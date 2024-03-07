@@ -1,5 +1,4 @@
 from random import choice, randint
-
 import pygame
 
 # Инициализация PyGame:
@@ -43,12 +42,52 @@ clock = pygame.time.Clock()
 
 
 # Тут опишите все классы игры.
-...
+class GameObject:
+    """Initializes the GameObject for other Objects"""
+
+    rows = 24
+    cols = 32
+    character = '+'
+
+    def __init__(self) -> None:
+        self.game_map = [
+            [' ' for _ in range(self.cols)]
+            for _ in range(self.rows)
+        ]
+        self.position_y = (self.rows) // 2
+        self.position_x = (self.cols) // 2
+        self.game_map[self.position_y][self.position_x] = GameObject.character
+
+    def draw(self):
+        """Draws the game map"""
+        pass
+
+
+class Apple(GameObject):
+    """Initializes the Apple Object"""
+
+    character = '*'
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.position_y, self. position_x = self.randomize_position()
+        self.game_map[self.position_y][self.position_x] = Apple.character
+
+    def randomize_position(self):
+        """Gets the initial position x and y for the class"""
+        return randint(0, self.rows), randint(0, self.cols)
+
+    def draw(self):
+        """Draws the game map"""
+        for row in self.game_map:
+            row_game = str.join('-', row)
+            print(row_game)
 
 
 def main():
     # Тут нужно создать экземпляры классов.
-    ...
+    apple = Apple()
+    apple.draw()
 
     # while True:
     #     clock.tick(SPEED)
