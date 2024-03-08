@@ -41,36 +41,17 @@ pygame.display.set_caption('Змейка')
 clock = pygame.time.Clock()
 
 
-class Map:
-    """Initiliazes the game map"""
+# Тут опишите все классы игры.
+class GameObject:
+    """Initializes the GameObject for other Objects"""
 
     rows = 24
     cols = 32
 
     def __init__(self) -> None:
-        self.game_map = [
-            [' ' for _ in range(self.cols)]
-            for _ in range(self.rows)
-        ]
-
-    def draw(self):
-        """Print in console row for row"""
-        for row in self.game_map:
-            row_game = str.join('-', row)
-            print(row_game)
-
-
-# Тут опишите все классы игры.
-class GameObject:
-    """Initializes the GameObject for other Objects"""
-
-    character = '+'
-
-    def __init__(self, map_instance) -> None:
-        self.map = map_instance
-        self.position_y = (self.map.rows) // 2
-        self.position_x = (self.map.cols) // 2
-        self.map.game_map[self.position_y][self.position_x] = GameObject.character
+        self.position_y = (self.rows * 20) // 2
+        self.position_x = (self.cols * 20) // 2
+        self.position = (self.position_y, self.position_x)
 
     def draw(self):
         """Draws the game map"""
@@ -78,44 +59,66 @@ class GameObject:
 
 
 class Apple(GameObject):
-    """Initializes the Apple Object"""
+    """This class describes the apple actions"""
 
-    character = '*'
-
-    def __init__(self, map_instance) -> None:
-        super().__init__(map_instance)
+    def __init__(self) -> None:
+        super().__init__()
+        self.body_color = APPLE_COLOR
         self.position_y, self. position_x = self.randomize_position()
-        self.map.game_map[self.position_y][self.position_x] = Apple.character
 
     def randomize_position(self):
         """Gets the initial position x and y for the class"""
-        return randint(0, self.map.rows), randint(0, self.map.cols)
+        return randint(0, self.rows), randint(0, self.cols)
+
+    def draw(self, surface):
+        """Draws the apple"""
+        rect = pygame.Rect(
+            (self.position[0], self.position[1]),
+            (GRID_SIZE, GRID_SIZE)
+        )
+        pygame.draw.rect(surface, self.body_color, rect)
+        pygame.draw.rect(surface, BORDER_COLOR, rect, 1)
 
 
 class Snake(GameObject):
-    """Initializes the Snake Object"""
+    """This class controls the movement, rendering, and user actions."""
 
     length = 1
-    character = '$'
 
-    def __init__(self, map_instance) -> None:
-        super().__init__(map_instance)
-        self.map.game_map[10][10] = Snake.character
+    def __init__(self) -> None:
+        super().__init__()
+        self.body_color = SNAKE_COLOR
+
+    def draw(self, surface):
+        for position in self.position[:-1]:
+            rect = (
+                pygame.Rect((position[0], position[1]), (GRID_SIZE, GRID_SIZE))
+            )
+            pygame.draw.rect(surface, self.body_color, rect)
+            pygame.draw.rect(surface, BORDER_COLOR, rect, 1)
+
+            # Отрисовка головы змейки
+            head_rect = pygame.Rect(self.position[0], (GRID_SIZE, GRID_SIZE))
+            pygame.draw.rect(surface, self.body_color, head_rect)
+            pygame.draw.rect(surface, BORDER_COLOR, head_rect, 1)
 
 
 def main():
     """Initializes the game"""
     # Тут нужно создать экземпляры классов.
-    map = Map()
-    apple = Apple(map)
-    snake = Snake(map)
-    map.draw()
+    apple = Apple()
+    snake = Snake()
 
-    # while True:
-    #     clock.tick(SPEED)
+    while True:
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()            
 
-        # Тут опишите основную логику игры.
-        # ...
+        apple.draw(screen)
+        snake.draw(screen)
+        pygame.display.update()
+        clock.tick(SPEED)
 
 
 if __name__ == '__main__':
