@@ -41,22 +41,36 @@ pygame.display.set_caption('Змейка')
 clock = pygame.time.Clock()
 
 
-# Тут опишите все классы игры.
-class GameObject:
-    """Initializes the GameObject for other Objects"""
+class Map:
+    """Initiliazes the game map"""
 
     rows = 24
     cols = 32
-    character = '+'
 
     def __init__(self) -> None:
         self.game_map = [
             [' ' for _ in range(self.cols)]
             for _ in range(self.rows)
         ]
-        self.position_y = (self.rows) // 2
-        self.position_x = (self.cols) // 2
-        self.game_map[self.position_y][self.position_x] = GameObject.character
+
+    def draw(self):
+        """Print in console row for row"""
+        for row in self.game_map:
+            row_game = str.join('-', row)
+            print(row_game)
+
+
+# Тут опишите все классы игры.
+class GameObject:
+    """Initializes the GameObject for other Objects"""
+
+    character = '+'
+
+    def __init__(self, map_instance) -> None:
+        self.map = map_instance
+        self.position_y = (self.map.rows) // 2
+        self.position_x = (self.map.cols) // 2
+        self.map.game_map[self.position_y][self.position_x] = GameObject.character
 
     def draw(self):
         """Draws the game map"""
@@ -68,26 +82,34 @@ class Apple(GameObject):
 
     character = '*'
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, map_instance) -> None:
+        super().__init__(map_instance)
         self.position_y, self. position_x = self.randomize_position()
-        self.game_map[self.position_y][self.position_x] = Apple.character
+        self.map.game_map[self.position_y][self.position_x] = Apple.character
 
     def randomize_position(self):
         """Gets the initial position x and y for the class"""
-        return randint(0, self.rows), randint(0, self.cols)
+        return randint(0, self.map.rows), randint(0, self.map.cols)
 
-    def draw(self):
-        """Draws the game map"""
-        for row in self.game_map:
-            row_game = str.join('-', row)
-            print(row_game)
+
+class Snake(GameObject):
+    """Initializes the Snake Object"""
+
+    length = 1
+    character = '$'
+
+    def __init__(self, map_instance) -> None:
+        super().__init__(map_instance)
+        self.map.game_map[10][10] = Snake.character
 
 
 def main():
+    """Initializes the game"""
     # Тут нужно создать экземпляры классов.
-    apple = Apple()
-    apple.draw()
+    map = Map()
+    apple = Apple(map)
+    snake = Snake(map)
+    map.draw()
 
     # while True:
     #     clock.tick(SPEED)
