@@ -90,6 +90,8 @@ class Snake(GameObject):
         super().__init__()
         self.body_color = SNAKE_COLOR
         Snake.position = (self.position_x, self.position_y)
+        self.positions = [Snake.position]
+        self.direction = RIGHT
 
     def update_direction(self):
         """Updates the direction of snake"""
@@ -100,7 +102,8 @@ class Snake(GameObject):
     def move(self):
         """Updates the position of snake"""
         """Add new head and remove last element if length has not increased"""
-        pass
+        self.get_head_position()
+
 
     def draw(self, surface):
         """Draws the snake"""
@@ -126,7 +129,7 @@ class Snake(GameObject):
 
     def get_head_position(self):
         """Returns the position of snakes head"""
-        pass
+        return self.positions[0]
 
     def reset(self):
         """Resets the snake to its initial state after collision"""
