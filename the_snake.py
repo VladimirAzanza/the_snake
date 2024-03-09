@@ -68,8 +68,8 @@ class Apple(GameObject):
 
     def randomize_position(self):
         """Gets the initial position x and y for the class"""
-        self.position_y = randint(0, SCREEN_HEIGHT - 20)
-        self.position_x = randint(0, SCREEN_WIDTH - 20)
+        self.position_y = randint(0, GRID_HEIGHT - 1) * GRID_SIZE
+        self.position_x = randint(0, GRID_WIDTH - 1) * GRID_SIZE
 
     def draw(self, surface):
         """Draws the apple"""
@@ -112,6 +112,9 @@ class Snake(GameObject):
         new_head_x = head_x + self.direction[0] * GRID_SIZE
         new_head_y = head_y + self.direction[1] * GRID_SIZE
         self.positions.insert(0, (new_head_x, new_head_y))
+
+        # if self.positions[0] == Apple.position:
+            # self.length += 1
 
         if len(self.positions) > self.length:
             self.last = (head_x, head_y)
@@ -186,7 +189,6 @@ def main():
         snake.move()
         snake.draw(screen)
         handle_keys(snake)
-        
         pygame.display.update()
 
 
