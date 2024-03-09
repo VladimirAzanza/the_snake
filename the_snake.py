@@ -92,6 +92,8 @@ class Snake(GameObject):
         Snake.position = (self.position_x, self.position_y)
         self.positions = [Snake.position]
         self.direction = RIGHT
+        self.next_direction = None
+        self.last = None
 
     def update_direction(self):
         """Updates the direction of snake"""
@@ -102,8 +104,17 @@ class Snake(GameObject):
     def move(self):
         """Updates the position of snake"""
         """Add new head and remove last element if length has not increased"""
-        self.get_head_position()
+        self.update_direction()
+        self.head_x, self.head_y = self.get_head_position()
 
+        new_head_x = self.head_x + self.direction[0] * GRID_SIZE
+        new_head_y = self.head_y + self.direction[1] * GRID_SIZE
+
+        self.positions.insert(0, (new_head_x, new_head_y))
+
+        if len(self.positions) > self.length:
+            self.last = self.positions.pop(-1)
+            # self.last = (new_head_x, new_head_y)
 
     def draw(self, surface):
         """Draws the snake"""
@@ -114,18 +125,18 @@ class Snake(GameObject):
             pygame.draw.rect(surface, self.body_color, rect)
             pygame.draw.rect(surface, BORDER_COLOR, rect, 1)
 
-            # Отрисовка головы змейки
-            head_rect = pygame.Rect(self.positions[0], (GRID_SIZE, GRID_SIZE))
-            pygame.draw.rect(surface, self.body_color, head_rect)
-            pygame.draw.rect(surface, BORDER_COLOR, head_rect, 1)
+        # Отрисовка головы змейки
+        head_rect = pygame.Rect(self.positions[0], (GRID_SIZE, GRID_SIZE))
+        pygame.draw.rect(surface, self.body_color, head_rect)
+        pygame.draw.rect(surface, BORDER_COLOR, head_rect, 1)
 
-            # Затирание последнего сегмента
-            if self.last:
-                last_rect = pygame.Rect(
-                    (self.last[0], self.last[1]),
-                    (GRID_SIZE, GRID_SIZE)
-                )
-            pygame.draw.rect(surface, BOARD_BACKGROUND_COLOR, last_rect)
+        # Затирание последнего сегмента
+        if self.last:
+            last_rect = pygame.Rect(
+                (self.last[0], self.last[1]),
+                (GRID_SIZE, GRID_SIZE)
+            )
+        pygame.draw.rect(surface, BOARD_BACKGROUND_COLOR, last_rect)
 
     def get_head_position(self):
         """Returns the position of snakes head"""
@@ -135,22 +146,22 @@ class Snake(GameObject):
         """Resets the snake to its initial state after collision"""
         pass
 
-    @staticmethod
-    def handle_keys(game_object):
-        """Processes the change direction"""
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                raise SystemExit
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_UP and game_object.direction != DOWN:
-                    game_object.next_direction = UP
-                elif event.key == pygame.K_DOWN and game_object.direction != UP:
-                    game_object.next_direction = DOWN
-                elif event.key == pygame.K_LEFT and game_object.direction != RIGHT:
-                    game_object.next_direction = LEFT
-                elif event.key == pygame.K_RIGHT and game_object.direction != LEFT:
-                    game_object.next_direction = RIGHT
+
+def handle_keys(game_object):
+    """Processes the change direction"""
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            raise SystemExit
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_UP and game_object.direction != DOWN:
+                game_object.next_direction = UP
+            elif event.key == pygame.K_DOWN and game_object.direction != UP:
+                game_object.next_direction = DOWN
+            elif event.key == pygame.K_LEFT and game_object.direction != RIGHT:
+                game_object.next_direction = LEFT
+            elif event.key == pygame.K_RIGHT and game_object.direction != LEFT:
+                game_object.next_direction = RIGHT
 
 
 def main():
@@ -162,7 +173,9 @@ def main():
     while True:
         clock.tick(SPEED)
         apple.draw(screen)
-        snake.handle_keys(snake)
+        snake.move()
+        snake.draw(screen)
+        handle_keys(snake)
 
         # snake.draw(screen)
         pygame.display.update()
