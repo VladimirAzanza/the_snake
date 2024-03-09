@@ -89,6 +89,18 @@ class Snake(GameObject):
     def __init__(self) -> None:
         super().__init__()
         self.body_color = SNAKE_COLOR
+        Snake.position = (self.position_x, self.position_y)
+
+    def update_direction(self):
+        """Updates the direction of snake"""
+        if self.next_direction:
+            self.direction = self.next_direction
+            self.next_direction = None
+
+    def move(self):
+        """Updates the position of snake"""
+        """Add new head and remove last element if length has not increased"""
+        pass
 
     def draw(self, surface):
         """Draws the snake"""
@@ -112,6 +124,31 @@ class Snake(GameObject):
                 )
             pygame.draw.rect(surface, BOARD_BACKGROUND_COLOR, last_rect)
 
+    def get_head_position(self):
+        """Returns the position of snakes head"""
+        pass
+
+    def reset(self):
+        """Resets the snake to its initial state after collision"""
+        pass
+
+    @staticmethod
+    def handle_keys(game_object):
+        """Processes the change direction"""
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                raise SystemExit
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP and game_object.direction != DOWN:
+                    game_object.next_direction = UP
+                elif event.key == pygame.K_DOWN and game_object.direction != UP:
+                    game_object.next_direction = DOWN
+                elif event.key == pygame.K_LEFT and game_object.direction != RIGHT:
+                    game_object.next_direction = LEFT
+                elif event.key == pygame.K_RIGHT and game_object.direction != LEFT:
+                    game_object.next_direction = RIGHT
+
 
 def main():
     """Initializes the game"""
@@ -120,14 +157,12 @@ def main():
     snake = Snake()
 
     while True:
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
+        clock.tick(SPEED)
         apple.draw(screen)
+        snake.handle_keys(snake)
+
         # snake.draw(screen)
         pygame.display.update()
-        clock.tick(SPEED)
 
 
 if __name__ == '__main__':
