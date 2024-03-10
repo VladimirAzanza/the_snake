@@ -111,9 +111,10 @@ class Snake(GameObject):
         self.positions.insert(0, (new_head_x, new_head_y))
 
         if len(self.positions) > self.length:
-            self.last = (head_x, head_y)
+            self.last = self.positions[-1]
             self.positions.pop(-1)
 
+        # Mantiene la serpiente en los margenes del juego.
         if new_head_x < 0:
             self.positions[0] = (SCREEN_WIDTH - GRID_SIZE, head_y)
         elif new_head_x >= SCREEN_WIDTH:
@@ -179,14 +180,14 @@ def main():
 
     while True:
         clock.tick(SPEED)
-        handle_keys(snake)
         snake.move()
+        handle_keys(snake)
         snake.draw(screen)
         apple.draw(screen)
 
         if snake.get_head_position() == apple.position:
+            apple = Apple()
             snake.length += 1
-            apple.randomize_position()
 
         pygame.display.update()
 
