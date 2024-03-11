@@ -71,7 +71,7 @@ class GameObject:
         """
         pass
 
-    def draw_cell(self, surface, position, color=None):
+    def draw_cell(self, position, color=None):
         """
         Method to render a single cell and will be useful for Apple and Snake.
         Parameters
@@ -89,7 +89,7 @@ class GameObject:
             pg.Rect((position[0], position[1]),
                     (GRID_SIZE, GRID_SIZE))
         )
-        pg.draw.rect(surface, color, rect)
+        pg.draw.rect(screen, color, rect)
 
 
 class Apple(GameObject):
@@ -145,7 +145,7 @@ class Apple(GameObject):
             if new_position not in snake_positions:
                 return new_position
 
-    def draw(self, surface):
+    def draw(self):
         """
         Renders the apple on screen.
         Parameters
@@ -153,7 +153,7 @@ class Apple(GameObject):
         surface : pygame.Surface
             Screen will be the surface to draw the cell on
         """
-        self.draw_cell(surface, self.position, self.body_color)
+        self.draw_cell(self.position, self.body_color)
 
 
 class Snake(GameObject):
@@ -174,9 +174,6 @@ class Snake(GameObject):
         By default is None
     last : tuple, optional
         Position of last segment of the snake's body
-
-    Class attributes
-    ----------------
     length : int
         The initial length of the snake's body
 
@@ -193,8 +190,6 @@ class Snake(GameObject):
     reset()
         Resets the snake to its initial state after colliding with itself.
     """
-
-    length = 1
 
     def __init__(self, body_color=SNAKE_COLOR) -> None:
         """
@@ -213,6 +208,8 @@ class Snake(GameObject):
             By default is None
         last : tuple, optional
             Position of last segment of the snake's body
+        length : int
+            The initial length of the snake's body
         """
         super().__init__()
         self.body_color = body_color
@@ -220,6 +217,7 @@ class Snake(GameObject):
         self.direction = RIGHT
         self.next_direction = None
         self.last = None
+        self.length = 1
 
     def update_direction(self):
         """The next direction will be applied after the user keypress."""
@@ -236,32 +234,22 @@ class Snake(GameObject):
         self.update_direction()
         head_x, head_y = self.get_head_position()
 
-        new_head_x = head_x + self.direction[0] * GRID_SIZE
-        new_head_y = head_y + self.direction[1] * GRID_SIZE
+        new_head_x = (head_x + self.direction[0] * GRID_SIZE) % SCREEN_WIDTH
+        new_head_y = (head_y + self.direction[1] * GRID_SIZE) % SCREEN_HEIGHT
         self.positions.insert(0, (new_head_x, new_head_y))
 
         if len(self.positions) > self.length:
-            self.last = self.positions[-1]
-            self.positions.pop(-1)
+            self.last = self.positions.pop(-1)
 
-        if new_head_x < 0:
-            self.positions[0] = (SCREEN_WIDTH - GRID_SIZE, head_y)
-        elif new_head_x >= SCREEN_WIDTH:
-            self.positions[0] = (0, head_y)
-        elif new_head_y < 0:
-            self.positions[0] = (head_x, SCREEN_HEIGHT - GRID_SIZE)
-        elif new_head_y >= SCREEN_HEIGHT:
-            self.positions[0] = (head_x, 0)
-
-    def draw(self, surface):
+    def draw(self):
         """Renders the snake's body, head and tail on screen."""
         for position in self.positions[:-1]:
-            self.draw_cell(surface, position, self.body_color)
+            self.draw_cell(position, self.body_color)
 
-        self.draw_cell(surface, self.positions[0], self.body_color)
+        self.draw_cell(self.positions[0], self.body_color)
 
         if self.last:
-            self.draw_cell(surface, self.last, BOARD_BACKGROUND_COLOR)
+            self.draw_cell(self.last, BOARD_BACKGROUND_COLOR)
 
     def get_head_position(self):
         """Returns the position of snakes head."""
@@ -317,8 +305,8 @@ def main():
             screen.fill(BOARD_BACKGROUND_COLOR)
             snake.reset()
 
-        apple.draw(screen)
-        snake.draw(screen)
+        apple.draw()
+        snake.draw()
 
         pg.display.update()
 
