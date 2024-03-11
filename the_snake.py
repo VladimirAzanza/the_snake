@@ -35,12 +35,12 @@ clock = pg.time.Clock()
 class GameObject:
     """
     Represents a game object for other game entities.
-    ...
+
     Attributes
     ----------
     position : tuple
         initial position of the game object
-    body_color : str
+    body_color : tuple
         initial body color of the game object
 
     Methods
@@ -59,7 +59,7 @@ class GameObject:
         ----------
         position : tuple
             initial position of the game object
-        body_color : str
+        body_color : tuple
             initial body color of the game object
         """
         self.position = ((SCREEN_WIDTH) // 2, (SCREEN_HEIGHT) // 2)
@@ -67,7 +67,7 @@ class GameObject:
 
     def draw(self):
         """
-        Draws the game map and by default is pass.
+        Renders the game object and by default is pass.
         This method should be overriden in child classes.
         """
         pass
@@ -94,22 +94,60 @@ class GameObject:
 
 
 class Apple(GameObject):
-    """This class describes the apple actions"""
+    """
+    Represents the apple in the game.
+
+    Attributes
+    ----------
+    body_color : tuple
+        For the color of the apple's body RGB is used (red color)
+    position : tuple
+        The position of the apple on the game board
+
+    Methods
+    -------
+    randomize_position()
+        Gives the position attribute for the apple a value.
+    draw(surface)
+        Renders the apple.
+    """
 
     def __init__(self) -> None:
+        """
+        Sets all required attributes for the apple object.
+        Parameters
+        ----------
+        position : tuple
+            initial position of the game object taken from
+            randomize position class
+        body_color : tuple
+            initial body color of the game object
+        """
         super().__init__()
         self.body_color = APPLE_COLOR
         self.position = self.randomize_position()
 
     def randomize_position(self):
-        """Returns the position for the Apple class"""
+        """
+        Returns the position for the Apple class.
+        Returns
+        -------
+        tuple
+            X position, Y position
+        """
         return (
             randint(0, GRID_WIDTH - 1) * GRID_SIZE,
             randint(0, GRID_HEIGHT - 1) * GRID_SIZE
         )
 
     def draw(self, surface):
-        """Draws the apple on screen"""
+        """
+        Renders the apple on screen.
+        Parameters
+        ----------
+        surface : pygame.Surface
+            Screen will be the surface to draw the cell on
+        """
         self.draw_cell(surface, self.position, self.body_color)
 
 
