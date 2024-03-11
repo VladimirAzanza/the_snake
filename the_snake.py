@@ -33,19 +33,58 @@ clock = pg.time.Clock()
 
 
 class GameObject:
-    """Initializes the GameObject for other Objects"""
+    """
+    Represents a game object for other game entities.
+    ...
+    Attributes
+    ----------
+    position : tuple
+        initial position of the game object
+    body_color : str
+        initial body color of the game object
+
+    Methods
+    -------
+    draw():
+        Draws the game map.
+    draw_cell(surface, position, color=None):
+        Renders a single cell.
+
+    """
 
     def __init__(self) -> None:
+        """
+        Sets all required attributes for the game object.
+        Parameters
+        ----------
+        position : tuple
+            initial position of the game object
+        body_color : str
+            initial body color of the game object
+        """
         self.position = ((SCREEN_WIDTH) // 2, (SCREEN_HEIGHT) // 2)
         self.body_color = BOARD_BACKGROUND_COLOR
 
     def draw(self):
-        """Draws the game map"""
+        """
+        Draws the game map and by default is pass.
+        This method should be overriden in child classes.
+        """
         pass
 
     def draw_cell(self, surface, position, color=None):
-        """Method to render a single cell"""
-        """Method useful for Apple and Snake"""
+        """
+        Method to render a single cell and will be useful for Apple and Snake.
+        Parameters
+        ----------
+        surface : pygame.Surface
+            Screen will be the surface to draw the cell on
+        position : tuple
+            Position of the cell to draw
+        color : str, optional
+            The color of the cell is set by default to the body color of game
+            object
+        """
         color = color or self.body_color
         rect = (
             pg.Rect((position[0], position[1]),
@@ -94,8 +133,10 @@ class Snake(GameObject):
             self.next_direction = None
 
     def move(self):
-        """Updates the position of snake"""
-        """Add new head and remove last element if length has not increased"""
+        """
+        Updates the position of snake.
+        Add new head and remove last element if length has not increased.
+        """
         self.update_direction()
         head_x, head_y = self.get_head_position()
 
