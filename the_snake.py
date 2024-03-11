@@ -49,10 +49,9 @@ class GameObject:
         Draws the game map.
     draw_cell(surface, position, color=None):
         Renders a single cell.
-
     """
 
-    def __init__(self) -> None:
+    def __init__(self, body_color=BOARD_BACKGROUND_COLOR) -> None:
         """
         Sets all required attributes for the game object.
         Parameters
@@ -63,7 +62,7 @@ class GameObject:
             initial body color of the game object
         """
         self.position = ((SCREEN_WIDTH) // 2, (SCREEN_HEIGHT) // 2)
-        self.body_color = BOARD_BACKGROUND_COLOR
+        self.body_color = body_color
 
     def draw(self):
         """
@@ -112,7 +111,7 @@ class Apple(GameObject):
         Renders the apple.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, body_color=APPLE_COLOR, snake_positions=[]) -> None:
         """
         Sets all required attributes for the apple object.
         Parameters
@@ -124,21 +123,27 @@ class Apple(GameObject):
             initial body color of the game object
         """
         super().__init__()
-        self.body_color = APPLE_COLOR
-        self.position = self.randomize_position()
+        self.body_color = body_color
+        self.position = self.randomize_position(snake_positions)
 
-    def randomize_position(self):
+    def randomize_position(self, snake_positions):
         """
         Returns the position for the Apple class.
+        Parameters
+        ----------
+        snake_positions : list
+            List of snake's body and head positions
         Returns
         -------
-        tuple
-            X position, Y position
+        new_position : tuple
         """
-        return (
-            randint(0, GRID_WIDTH - 1) * GRID_SIZE,
-            randint(0, GRID_HEIGHT - 1) * GRID_SIZE
-        )
+        while True:
+            new_position = (
+                randint(0, GRID_WIDTH - 1) * GRID_SIZE,
+                randint(0, GRID_HEIGHT - 1) * GRID_SIZE
+            )
+            if new_position not in snake_positions:
+                return new_position
 
     def draw(self, surface):
         """
@@ -191,7 +196,7 @@ class Snake(GameObject):
 
     length = 1
 
-    def __init__(self) -> None:
+    def __init__(self, body_color=SNAKE_COLOR) -> None:
         """
         Sets all required attributes for the snake object.
         Parameters
@@ -210,7 +215,7 @@ class Snake(GameObject):
             Position of last segment of the snake's body
         """
         super().__init__()
-        self.body_color = SNAKE_COLOR
+        self.body_color = body_color
         self.positions = [self.position]
         self.direction = RIGHT
         self.next_direction = None
@@ -263,7 +268,7 @@ class Snake(GameObject):
         return self.positions[0]
 
     def reset(self):
-        """Resets the snake to its initial state after collision"""
+        """Resets the snake to its initial state after collision."""
         self.length = 1
         self.positions = [self.position]
         self.direction = choice([UP, DOWN, RIGHT, LEFT])
@@ -294,9 +299,9 @@ def handle_keys(game_object):
 
 
 def main():
-    """Initializes the game"""
-    apple = Apple()
-    snake = Snake()
+    """Initializes the game."""
+    apple = Apple(APPLE_COLOR)
+    snake = Snake(SNAKE_COLOR)
 
     while True:
         clock.tick(SPEED)
@@ -304,7 +309,8 @@ def main():
         snake.move()
 
         if snake.get_head_position() == apple.position:
-            apple = Apple()
+            snake_positions = [snake.get_head_position, snake.positions[1:-1]]
+            apple = Apple(APPLE_COLOR, snake_positions)
             snake.length += 1
 
         if snake.get_head_position() in snake.positions[2:]:
