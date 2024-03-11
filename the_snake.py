@@ -219,7 +219,8 @@ class Snake(GameObject):
         self.last = None
         self.length = 1
         self.reset()
-# Здесь в update_direction(self) не понял что надо делать
+
+    # Здесь в update_direction(self) не понял что надо делать
     def update_direction(self):
         """The next direction will be applied after the user keypress."""
         if self.next_direction:
