@@ -44,14 +44,14 @@ class GameObject:
         pass
 
     def draw_cell(self, surface, position, color=None):
-        """sada"""
+        """Method to render a single cell"""
+        """Method useful for Apple and Snake"""
         color = color or self.body_color
         rect = (
             pg.Rect((position[0], position[1]),
                     (GRID_SIZE, GRID_SIZE))
         )
         pg.draw.rect(surface, color, rect)
-        pg.draw.rect(surface, BORDER_COLOR, rect, 1)
 
 
 class Apple(GameObject):
@@ -123,17 +123,11 @@ class Snake(GameObject):
             self.draw_cell(surface, position, self.body_color)
 
         # Drawing the snake's head
-        head_rect = pg.Rect(self.positions[0], (GRID_SIZE, GRID_SIZE))
-        pg.draw.rect(surface, self.body_color, head_rect)
-        pg.draw.rect(surface, BORDER_COLOR, head_rect, 1)
+        self.draw_cell(surface, self.positions[0], self.body_color)
 
         # Erase the last segment
         if self.last:
-            last_rect = pg.Rect(
-                (self.last[0], self.last[1]),
-                (GRID_SIZE, GRID_SIZE)
-            )
-        pg.draw.rect(surface, BOARD_BACKGROUND_COLOR, last_rect)
+            self.draw_cell(surface, self.last, BOARD_BACKGROUND_COLOR)
 
     def get_head_position(self):
         """Returns the position of snakes head"""
