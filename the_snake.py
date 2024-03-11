@@ -218,7 +218,8 @@ class Snake(GameObject):
         self.next_direction = None
         self.last = None
         self.length = 1
-
+        self.reset()
+# Здесь в update_direction(self) не понял что надо делать
     def update_direction(self):
         """The next direction will be applied after the user keypress."""
         if self.next_direction:
@@ -242,10 +243,7 @@ class Snake(GameObject):
             self.last = self.positions.pop(-1)
 
     def draw(self):
-        """Renders the snake's body, head and tail on screen."""
-        for position in self.positions[:-1]:
-            self.draw_cell(position, self.body_color)
-
+        """Renders the snake's body and tail on screen."""
         self.draw_cell(self.positions[0], self.body_color)
 
         if self.last:
@@ -260,6 +258,7 @@ class Snake(GameObject):
         self.length = 1
         self.positions = [self.position]
         self.direction = choice([UP, DOWN, RIGHT, LEFT])
+        self.last = None
 
 
 def handle_keys(game_object):
@@ -275,7 +274,7 @@ def handle_keys(game_object):
         if event.type == pg.QUIT:
             pg.quit()
             raise SystemExit
-        elif event.type == pg.KEYDOWN:
+        if event.type == pg.KEYDOWN:
             if event.key == pg.K_UP and game_object.direction != DOWN:
                 game_object.next_direction = UP
             elif event.key == pg.K_DOWN and game_object.direction != UP:
