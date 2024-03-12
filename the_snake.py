@@ -71,7 +71,7 @@ class GameObject:
         """
         pass
 
-    def draw_cell(self, position, color=None):
+    def draw_cell(self, position, color=None, border_color=None):
         """
         Method to render a single cell and will be useful for Apple and Snake.
         Parameters
@@ -90,6 +90,8 @@ class GameObject:
                     (GRID_SIZE, GRID_SIZE))
         )
         pg.draw.rect(screen, color, rect)
+        if border_color:
+            pg.draw.rect(screen, border_color, rect, 1)
 
 
 class Apple(GameObject):
@@ -153,7 +155,7 @@ class Apple(GameObject):
         surface : pygame.Surface
             Screen will be the surface to draw the cell on
         """
-        self.draw_cell(self.position, self.body_color)
+        self.draw_cell(self.position, self.body_color, BORDER_COLOR)
 
 
 class Snake(GameObject):
@@ -241,11 +243,11 @@ class Snake(GameObject):
         self.positions.insert(0, (new_head_x, new_head_y))
 
         if len(self.positions) > self.length:
-            self.last = self.positions.pop(-1)
+            self.last = self.positions.pop()
 
     def draw(self):
         """Renders the snake's body and tail on screen."""
-        self.draw_cell(self.positions[0], self.body_color)
+        self.draw_cell(self.positions[0], self.body_color, BORDER_COLOR)
 
         if self.last:
             self.draw_cell(self.last, BOARD_BACKGROUND_COLOR)
