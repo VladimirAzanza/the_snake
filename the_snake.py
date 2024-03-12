@@ -53,7 +53,8 @@ class GameObject:
 
     def __init__(self, body_color=BOARD_BACKGROUND_COLOR) -> None:
         """
-        Sets all required attributes for the game object.
+        Initializes the game object with a board background color.
+
         Parameters
         ----------
         position : tuple
@@ -65,15 +66,13 @@ class GameObject:
         self.body_color = body_color
 
     def draw(self):
-        """
-        Renders the game object and by default is pass.
-        This method should be overriden in child classes.
-        """
+        """Renders the game object and by default is pass."""
         pass
 
     def draw_cell(self, position, color=None, border_color=None):
         """
         Method to render a single cell and will be useful for Apple and Snake.
+
         Parameters
         ----------
         surface : pygame.Surface
@@ -109,13 +108,14 @@ class Apple(GameObject):
     -------
     randomize_position()
         Gives the position attribute for the apple a value.
-    draw(surface)
+    draw()
         Renders the apple.
     """
 
     def __init__(self, snake_positions=[]) -> None:
         """
-        Sets all required attributes for the apple object.
+        Initializes the Apple object with a random position.
+
         Parameters
         ----------
         position : tuple
@@ -130,6 +130,7 @@ class Apple(GameObject):
     def randomize_position(self, snake_positions):
         """
         Returns the position for the Apple class.
+
         Parameters
         ----------
         snake_positions : list
@@ -147,13 +148,7 @@ class Apple(GameObject):
                 return new_position
 
     def draw(self):
-        """
-        Renders the apple on screen.
-        Parameters
-        ----------
-        surface : pygame.Surface
-            Screen will be the surface to draw the cell on
-        """
+        """Renders the apple on screen."""
         self.draw_cell(self.position, self.body_color, BORDER_COLOR)
 
 
@@ -184,7 +179,7 @@ class Snake(GameObject):
         Updates the direction of the snake based on user input.
     move()
         Updates the position of the snake.
-    draw(surface)
+    draw()
         Renders the snake on screen.
     get_head_position()
         Returns the position of the snake's head.
@@ -195,6 +190,7 @@ class Snake(GameObject):
     def __init__(self) -> None:
         """
         Sets all required attributes for the snake object.
+
         Parameters
         ----------
         body_color : tuple
@@ -214,23 +210,18 @@ class Snake(GameObject):
         """
         super().__init__(body_color=SNAKE_COLOR)
         self.direction = RIGHT
-        self.next_direction = None
         self.reset()
 
     # Здесь в update_direction(self) не понял что надо делать
-    def update_direction(self):
+    def update_direction(self, next_direction):
         """The next direction will be applied after the user keypress."""
-        if self.next_direction:
-            self.direction = self.next_direction
-            self.next_direction = None
+        self.direction = next_direction
 
     def move(self):
         """
         Updates the position of snake.
         Add new head and remove last element if length has not increased.
-        Keeps the snake on the margins of the game.
         """
-        self.update_direction()
         head_x, head_y = self.get_head_position()
 
         self.positions.insert(
@@ -278,13 +269,13 @@ def handle_keys(game_object):
             raise SystemExit
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_UP and game_object.direction != DOWN:
-                game_object.next_direction = UP
+                game_object.update_direction(UP)
             elif event.key == pg.K_DOWN and game_object.direction != UP:
-                game_object.next_direction = DOWN
+                game_object.update_direction(DOWN)
             elif event.key == pg.K_LEFT and game_object.direction != RIGHT:
-                game_object.next_direction = LEFT
+                game_object.update_direction(LEFT)
             elif event.key == pg.K_RIGHT and game_object.direction != LEFT:
-                game_object.next_direction = RIGHT
+                game_object.update_direction(RIGHT)
 
 
 def main():
