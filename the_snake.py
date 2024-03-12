@@ -86,7 +86,7 @@ class GameObject:
         """
         color = color or self.body_color
         rect = (
-            pg.Rect((position[0], position[1]),
+            pg.Rect((position),
                     (GRID_SIZE, GRID_SIZE))
         )
         pg.draw.rect(screen, color, rect)
@@ -113,7 +113,7 @@ class Apple(GameObject):
         Renders the apple.
     """
 
-    def __init__(self, body_color=APPLE_COLOR, snake_positions=[]) -> None:
+    def __init__(self, snake_positions=[]) -> None:
         """
         Sets all required attributes for the apple object.
         Parameters
@@ -124,8 +124,7 @@ class Apple(GameObject):
         body_color : tuple
             initial body color of the game object
         """
-        super().__init__()
-        self.body_color = body_color
+        super().__init__(body_color=APPLE_COLOR)
         self.position = self.randomize_position(snake_positions)
 
     def randomize_position(self, snake_positions):
@@ -193,7 +192,7 @@ class Snake(GameObject):
         Resets the snake to its initial state after colliding with itself.
     """
 
-    def __init__(self, body_color=SNAKE_COLOR) -> None:
+    def __init__(self) -> None:
         """
         Sets all required attributes for the snake object.
         Parameters
@@ -213,13 +212,9 @@ class Snake(GameObject):
         length : int
             The initial length of the snake's body
         """
-        super().__init__()
-        self.body_color = body_color
-        self.positions = [self.position]
+        super().__init__(body_color=SNAKE_COLOR)
         self.direction = RIGHT
         self.next_direction = None
-        self.last = None
-        self.length = 1
         self.reset()
 
     # Здесь в update_direction(self) не понял что надо делать
@@ -238,16 +233,20 @@ class Snake(GameObject):
         self.update_direction()
         head_x, head_y = self.get_head_position()
 
-        new_head_x = (head_x + self.direction[0] * GRID_SIZE) % SCREEN_WIDTH
-        new_head_y = (head_y + self.direction[1] * GRID_SIZE) % SCREEN_HEIGHT
-        self.positions.insert(0, (new_head_x, new_head_y))
+        self.positions.insert(
+            0,
+            (
+                (head_x + self.direction[0] * GRID_SIZE) % SCREEN_WIDTH,
+                (head_y + self.direction[1] * GRID_SIZE) % SCREEN_HEIGHT
+            )
+        )
 
         if len(self.positions) > self.length:
             self.last = self.positions.pop()
 
     def draw(self):
         """Renders the snake's body and tail on screen."""
-        self.draw_cell(self.positions[0], self.body_color, BORDER_COLOR)
+        self.draw_cell(self.get_head_position(), self.body_color, BORDER_COLOR)
 
         if self.last:
             self.draw_cell(self.last, BOARD_BACKGROUND_COLOR)
@@ -290,20 +289,19 @@ def handle_keys(game_object):
 
 def main():
     """Initializes the game."""
-    apple = Apple(APPLE_COLOR)
-    snake = Snake(SNAKE_COLOR)
+    apple = Apple()
+    snake = Snake()
 
     while True:
         clock.tick(SPEED)
         handle_keys(snake)
         snake.move()
 
-        if snake.get_head_position() == apple.position:
-            snake_positions = [snake.get_head_position, snake.positions[1:-1]]
-            apple = Apple(APPLE_COLOR, snake_positions)
+        if (head_position := snake.get_head_position()) == apple.position:
+            apple = Apple(snake.positions)
             snake.length += 1
 
-        if snake.get_head_position() in snake.positions[2:]:
+        if head_position in snake.positions[2:]:
             screen.fill(BOARD_BACKGROUND_COLOR)
             snake.reset()
 
