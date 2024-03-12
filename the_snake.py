@@ -39,28 +39,28 @@ class GameObject:
     Attributes
     ----------
     position : tuple
-        initial position of the game object
+        Initial position of the game object
     body_color : tuple
-        initial body color of the game object
+        Initial body color of the game object
 
     Methods
     -------
     draw():
         Draws the game map.
-    draw_cell(surface, position, color=None):
+    draw_cell(surface, position, color=None, border_color=None):
         Renders a single cell.
     """
 
     def __init__(self, body_color=BOARD_BACKGROUND_COLOR) -> None:
         """
-        Initializes the game object with a board background color.
+        Initializes the game object with an initial position and color.
 
         Parameters
         ----------
         position : tuple
-            initial position of the game object
+            Initial position of the game object
         body_color : tuple
-            initial body color of the game object
+            Initial body color of the game object
         """
         self.position = ((SCREEN_WIDTH) // 2, (SCREEN_HEIGHT) // 2)
         self.body_color = body_color
@@ -80,8 +80,9 @@ class GameObject:
         position : tuple
             Position of the cell to draw
         color : str, optional
-            The color of the cell is set by default to the body color of game
-            object
+            The color of the cell is by default the body color of game object
+        border_color : tuple, optional
+            The border color of cell is by default None
         """
         color = color or self.body_color
         rect = (
@@ -99,15 +100,13 @@ class Apple(GameObject):
 
     Attributes
     ----------
-    body_color : tuple
-        For the color of the apple's body RGB is used (red color)
     position : tuple
-        The position of the apple on the game board
+        Position of the apple on game board
 
     Methods
     -------
     randomize_position()
-        Gives the position attribute for the apple a value.
+        Returns a random value to assign a position to the apple.
     draw()
         Renders the apple.
     """
@@ -118,11 +117,8 @@ class Apple(GameObject):
 
         Parameters
         ----------
-        position : tuple
-            initial position of the game object taken from
-            randomize position class
-        body_color : tuple
-            initial body color of the game object
+        snake_positions : list
+            List with positions occupied by the snake
         """
         super().__init__(body_color=APPLE_COLOR)
         self.position = self.randomize_position(snake_positions)
@@ -134,7 +130,7 @@ class Apple(GameObject):
         Parameters
         ----------
         snake_positions : list
-            List of snake's body and head positions
+            List with positions occupied by the snake
         Returns
         -------
         new_position : tuple
@@ -158,20 +154,8 @@ class Snake(GameObject):
 
     Attributes
     ----------
-    body_color : tuple
-        For the color of the snake's body RGB is used (green)
-    positions : list
-        The position of the snake on the game board
     direction : tuple
-        The initial direction of the snake
-        By default the snake moves to the right
-    next_direction : tuple, optional
-        The next direction will be applied after the user keypress
-        By default is None
-    last : tuple, optional
-        Position of last segment of the snake's body
-    length : int
-        The initial length of the snake's body
+        The initial direction set by default is right
 
     Methods
     -------
@@ -193,35 +177,19 @@ class Snake(GameObject):
 
         Parameters
         ----------
-        body_color : tuple
-            For the color of the snake's body RGB is used (green)
-        positions : list
-            A list of tuples with the position of the snake on the game board
         direction : tuple
-            The initial direction of the snake
-            By default the snake moves to the right
-        next_direction : tuple, optional
-            The next direction will be applied after the user keypress
-            By default is None
-        last : tuple, optional
-            Position of last segment of the snake's body
-        length : int
-            The initial length of the snake's body
+            The initial direction set by default is right
         """
         super().__init__(body_color=SNAKE_COLOR)
         self.direction = RIGHT
         self.reset()
 
-    # Здесь в update_direction(self) не понял что надо делать
     def update_direction(self, next_direction):
-        """The next direction will be applied after the user keypress."""
+        """The next direction will be updated after the user input."""
         self.direction = next_direction
 
     def move(self):
-        """
-        Updates the position of snake.
-        Add new head and remove last element if length has not increased.
-        """
+        """Updates the position of the snake."""
         head_x, head_y = self.get_head_position()
 
         self.positions.insert(
@@ -244,7 +212,7 @@ class Snake(GameObject):
             self.last = None
 
     def get_head_position(self):
-        """Returns the position of snakes head."""
+        """Returns the position of snake's head."""
         return self.positions[0]
 
     def reset(self):
@@ -305,3 +273,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+# Андрей, спасибо за ваш ревью!.
