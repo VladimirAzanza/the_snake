@@ -241,6 +241,7 @@ class Snake(GameObject):
 
         if self.last:
             self.draw_cell(self.last, BOARD_BACKGROUND_COLOR)
+            self.last = None
 
     def get_head_position(self):
         """Returns the position of snakes head."""
