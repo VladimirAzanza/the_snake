@@ -22,6 +22,8 @@ APPLE_COLOR = (255, 0, 0)
 
 SNAKE_COLOR = (0, 255, 0)
 
+GARLIC_COLOR = (255, 255, 153)
+
 SPEED = 10
 
 screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), 0, 32)
@@ -148,6 +150,15 @@ class Apple(GameObject):
         self.draw_cell(self.position, self.body_color, BORDER_COLOR)
 
 
+class Garlic(Apple):
+    """Garlic will decrease length of the snake."""
+
+    def __init__(self, busy_positions=[]) -> None:
+        super().__init__()
+        self.body_color = GARLIC_COLOR
+        self.position = self.randomize_position(busy_positions)
+
+
 class Snake(GameObject):
     """
     This class controls the movement, rendering, and user actions of the snake.
@@ -253,6 +264,8 @@ def main():
 
     apple = Apple()
     snake = Snake()
+    busy_positions = [apple.position, snake.positions]
+    garlic = Garlic(busy_positions)
 
     while True:
         clock.tick(SPEED)
@@ -260,7 +273,7 @@ def main():
         snake.move()
 
         if (head_position := snake.get_head_position()) == apple.position:
-            apple = Apple(snake.positions)
+            apple = Apple([snake.positions, garlic.position])
             snake.length += 1
             SPEED += 1
 
@@ -270,6 +283,7 @@ def main():
 
         apple.draw()
         snake.draw()
+        garlic.draw()
 
         pg.display.update()
 
