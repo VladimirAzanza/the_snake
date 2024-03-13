@@ -258,14 +258,19 @@ def handle_keys(game_object):
                 game_object.update_direction(RIGHT)
 
 
+def busy_positions(object_positions_1=[], object_positions_2=[]):
+    busy_positions_list = [position for position in object_positions_1]
+    busy_positions_list.extend(object_positions_2)
+    return busy_positions_list
+
+
 def main():
     """Initializes the game."""
     global SPEED
 
     apple = Apple()
     snake = Snake()
-    busy_positions = [apple.position, snake.positions]
-    garlic = Garlic(busy_positions)
+    garlic = Garlic(busy_positions(snake.positions, [apple.position]))
 
     while True:
         clock.tick(SPEED)
@@ -273,13 +278,18 @@ def main():
         snake.move()
 
         if (head_position := snake.get_head_position()) == apple.position:
-            apple = Apple([snake.positions, garlic.position])
+            apple = Apple(busy_positions(snake.positions, [garlic.position]))
             snake.length += 1
             SPEED += 1
+
+        if head_position == garlic.position:
+            garlic = Garlic(busy_positions(snake.positions, [apple.position]))
+            
 
         if head_position in snake.positions[2:]:
             screen.fill(BOARD_BACKGROUND_COLOR)
             snake.reset()
+            SPEED = 10
 
         apple.draw()
         snake.draw()
