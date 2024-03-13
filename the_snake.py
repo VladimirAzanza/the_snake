@@ -22,7 +22,7 @@ APPLE_COLOR = (255, 0, 0)
 
 SNAKE_COLOR = (0, 255, 0)
 
-SPEED = 20
+SPEED = 10
 
 screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), 0, 32)
 screen.fill(BOARD_BACKGROUND_COLOR)
@@ -249,6 +249,8 @@ def handle_keys(game_object):
 
 def main():
     """Initializes the game."""
+    global SPEED
+
     apple = Apple()
     snake = Snake()
 
@@ -260,6 +262,7 @@ def main():
         if (head_position := snake.get_head_position()) == apple.position:
             apple = Apple(snake.positions)
             snake.length += 1
+            SPEED += 1
 
         if head_position in snake.positions[2:]:
             screen.fill(BOARD_BACKGROUND_COLOR)
@@ -273,5 +276,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-# Андрей, спасибо за ваш ревью!.
