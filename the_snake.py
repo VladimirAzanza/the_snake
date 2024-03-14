@@ -151,7 +151,14 @@ class Apple(GameObject):
 
 
 class Garlic(Apple):
-    """Garlic will decrease length of the snake."""
+    """
+    Garlic will decrease length of the snake by one unit.
+
+    Attributes
+    ----------
+    position : tuple
+        Position of the garlic on game board
+    """
 
     def __init__(self, busy_positions=[]) -> None:
         super().__init__()
@@ -214,6 +221,9 @@ class Snake(GameObject):
         if len(self.positions) > self.length:
             self.last = self.positions.pop()
 
+        if self.poisoned_snake:
+            self.reduced_body = self.positions.pop()
+
     def draw(self):
         """Renders the snake's body and tail on screen."""
         self.draw_cell(self.get_head_position(), self.body_color, BORDER_COLOR)
@@ -221,6 +231,11 @@ class Snake(GameObject):
         if self.last:
             self.draw_cell(self.last, BOARD_BACKGROUND_COLOR)
             self.last = None
+
+        if self.reduced_body:
+            self.draw_cell(self.reduced_body, BOARD_BACKGROUND_COLOR)
+            self.reduced_body = None
+            self.poisoned_snake = False
 
     def get_head_position(self):
         """Returns the position of snake's head."""
@@ -232,6 +247,8 @@ class Snake(GameObject):
         self.positions = [self.position]
         self.direction = choice([UP, DOWN, RIGHT, LEFT])
         self.last = None
+        self.reduced_body = None
+        self.poisoned_snake = False
 
 
 def handle_keys(game_object):
@@ -259,6 +276,7 @@ def handle_keys(game_object):
 
 
 def busy_positions(object_positions_1=[], object_positions_2=[]):
+    """Returns a list of tuples with positions occupied by other objects."""
     busy_positions_list = [position for position in object_positions_1]
     busy_positions_list.extend(object_positions_2)
     return busy_positions_list
@@ -284,7 +302,9 @@ def main():
 
         if head_position == garlic.position:
             garlic = Garlic(busy_positions(snake.positions, [apple.position]))
-            
+            if snake.length > 1:
+                snake.length -= 1
+                snake.poisoned_snake = True
 
         if head_position in snake.positions[2:]:
             screen.fill(BOARD_BACKGROUND_COLOR)
