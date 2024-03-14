@@ -287,8 +287,9 @@ def busy_positions(object_positions_1=[], object_positions_2=[]):
 def main():
     """
     In the game, apple increases the length of snake.
-    When there is a collision with a stone or the snake,
-    the snake resets to its initial state.
+    When there is a collision with a stone or garlic,
+    the snake is poisoned, resultin in its reduction or
+    reset to it's initial state.
     """
     global SPEED
 
