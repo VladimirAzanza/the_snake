@@ -24,6 +24,8 @@ SNAKE_COLOR = (0, 255, 0)
 
 GARLIC_COLOR = (255, 255, 153)
 
+ROCK_COLOR = (35, 0, 12)
+
 SPEED = 10
 
 screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), 0, 32)
@@ -150,19 +152,19 @@ class Apple(GameObject):
         self.draw_cell(self.position, self.body_color, BORDER_COLOR)
 
 
-class Garlic(Apple):
+class Poison(Apple):
     """
-    Garlic will decrease length of the snake by one unit.
+    Garlic will hurt the snake
 
     Attributes
     ----------
     position : tuple
-        Position of the garlic on game board
+        Position of the poison on game board
     """
 
-    def __init__(self, busy_positions=[]) -> None:
+    def __init__(self, busy_positions=[], color=None) -> None:
         super().__init__()
-        self.body_color = GARLIC_COLOR
+        self.body_color = color
         self.position = self.randomize_position(busy_positions)
 
 
@@ -283,12 +285,23 @@ def busy_positions(object_positions_1=[], object_positions_2=[]):
 
 
 def main():
-    """Initializes the game."""
+    """
+    In the game, apple increases the length of snake.
+    When there is a collision with a stone or the snake,
+    the snake resets to its initial state.
+    """
     global SPEED
 
     apple = Apple()
     snake = Snake()
-    garlic = Garlic(busy_positions(snake.positions, [apple.position]))
+    garlic = Poison(
+        busy_positions(snake.positions, [apple.position]),
+        GARLIC_COLOR
+    )
+    rock = Poison(
+        busy_positions(snake.positions, [apple.position, garlic.position]),
+        ROCK_COLOR
+    )
 
     while True:
         clock.tick(SPEED)
@@ -301,7 +314,10 @@ def main():
             SPEED += 1
 
         if head_position == garlic.position:
-            garlic = Garlic(busy_positions(snake.positions, [apple.position]))
+            garlic = Poison(
+                busy_positions(snake.positions, [apple.position]),
+                GARLIC_COLOR
+            )
             if snake.length > 1:
                 snake.length -= 1
                 snake.poisoned_snake = True
@@ -311,9 +327,21 @@ def main():
             snake.reset()
             SPEED = 10
 
+        if head_position == rock.position:
+            rock = Poison(
+                busy_positions(
+                    snake.positions, [apple.position, garlic.position]
+                ),
+                ROCK_COLOR
+            )
+            screen.fill(BOARD_BACKGROUND_COLOR)
+            snake.reset()
+            SPEED = 10
+
         apple.draw()
         snake.draw()
         garlic.draw()
+        rock.draw()
 
         pg.display.update()
 
